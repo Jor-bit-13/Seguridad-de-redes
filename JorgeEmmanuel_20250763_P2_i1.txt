@@ -1,0 +1,29 @@
+Documentación Técnica: Infraestructura 1
+
+1. Objetivo de la Práctica
+Establecer una comunicación segura mediante un túnel VPN Site-to-Site con protocolo IPsec entre dos sucursales (Sede 1 y Sede 2) utilizando firewalls FortiGate en un entorno emulado (GNS3). El tráfico es enrutado a través de un router ISP central (Cisco), aislando las redes de área local (LAN).
+
+2. Topología y Esquema de Direccionamiento
+El diseño de red se personalizó utilizando los últimos cuatro dígitos de la matrícula asignada (0763).
+
+Dispositivo | Interfaz / Rol | Dirección IP / Máscara | Red Base
+FortiGate 1 (Sede 1) | Port 1 (WAN) | 200.0.7.2 /30 | 200.0.7.0 /30
+FortiGate 1 (Sede 1) | Port 2 (LAN) | 10.7.63.1 /25 | 10.7.63.0 /25
+FortiGate 2 (Sede 2) | Port 1 (WAN) | 200.0.63.2 /30 | 200.0.63.0 /30
+FortiGate 2 (Sede 2) | Port 2 (LAN) | 192.168.63.1 /28 | 192.168.63.0 /28
+Router ISP (Cisco R1) | FastEthernet 0/0 | 200.0.7.1 /30 | 200.0.7.0 /30
+Router ISP (Cisco R1) | FastEthernet 1/0 | 200.0.63.1 /30 | 200.0.63.0 /30
+Webterm (Cliente 1) | eth0 | 10.7.63.2 /25 | 10.7.63.0 /25
+Alpine Linux (Cliente 2) | eth0 | 192.168.63.2 /28 | 192.168.63.0 /28
+
+3. Fases de Configuración
+• Inicialización y Enrutamiento: Se asignaron recursos de memoria (2GB) a las máquinas virtuales FortiOS para garantizar el despliegue del servicio web (httpsd). Se configuraron las interfaces físicas y rutas estáticas por defecto (0.0.0.0/0) apuntando a las interfaces del router ISP.
+
+• Despliegue del Túnel VPN:
+  o Sede 1: Configuración mediante el asistente gráfico (IPsec Wizard) definiendo la IP remota (200.0.63.2), clave precompartida y las subredes de origen/destino.
+  o Sede 2: Configuración mediante CLI (Línea de Comandos) estableciendo los parámetros de la Fase 1 (Autenticación), Fase 2 (Cifrado AES/SHA), políticas de firewall bidireccionales (VPN_In, VPN_Out) y la ruta estática para inyectar el tráfico al túnel.
+
+• Verificación: Se validó la conexión de extremo a extremo mediante el envío de paquetes ICMP (Ping) desde el nodo Webterm hacia el nodo Alpine, confirmando que la carga útil viaja encriptada a través de la interfaz virtual IPsec.
+
+Video
+https://youtu.be/UPfJu0ESMDM
